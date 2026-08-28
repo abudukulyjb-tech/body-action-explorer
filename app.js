@@ -54,14 +54,35 @@ class Viewer{
   gltf.scene.traverse(o=>{if(!o.isMesh)return;o.userData.anatomyName=originalName(o);o.userData.system=type;const old=o.material;o.material=new THREE.MeshStandardMaterial({color:cfg.color,roughness:.62,metalness:0,transparent:true,opacity:cfg.opacity,side:THREE.DoubleSide});if(old?.map)o.material.map=old.map;meshes.push(o);});
   gltf.scene.visible=!!this.enabled[type];this.root.add(gltf.scene);this.systems[type]={scene:gltf.scene,meshes};this.updateBounds();this.applyView();return this.systems[type];
  }
+ meshBox(obj){
+  const box=new THREE.Box3();obj.updateMatrixWorld(true);
+  obj.traverse(o=>{if(!o.isMesh||!o.geometry)return;o.geometry.computeBoundingBox();if(!o.geometry.boundingBox)return;const b=o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);box.union(b);});
+  return box;
+ }
  async loadRig(){
   if(this.rig)return this.rig;
   const gltf=await new GLTFLoader().loadAsync(RIG_URL);this.rig=gltf.scene;this.rigRoot.add(this.rig);
-  this.rig.traverse(o=>{if(o.isBone){this.rigBones[norm(o.name)]=o;this.rigBase[o.uuid]={q:o.quaternion.clone(),p:o.position.clone()};}if(o.isMesh){o.frustumCulled=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){if(m){m.transparent=true;m.opacity=.95;m.roughness=.72;}}}});
-  // Match the rig's overall height/center to the anatomy model so camera behavior stays familiar.
-  const rigBox=new THREE.Box3().setFromObject(this.rig);const anatBox=this.bounds||new THREE.Box3().setFromObject(this.root);const rs=rigBox.getSize(new THREE.Vector3()),as=anatBox.getSize(new THREE.Vector3());const scale=(as.y||as.z||1)/(rs.y||rs.z||1);this.rig.scale.setScalar(scale);
-  this.rig.updateMatrixWorld(true);const rb2=new THREE.Box3().setFromObject(this.rig);const rc=rb2.getCenter(new THREE.Vector3()),ac=anatBox.getCenter(new THREE.Vector3());this.rig.position.add(ac.clone().sub(rc));this.rig.updateMatrixWorld(true);
+  this.rig.traverse(o=>{if(o.isBone){this.rigBones[norm(o.name)]=o;this.rigBase[o.uuid]={q:o.quaternion.clone(),p:o.position.clone()};}if(o.isMesh){o.frustumCulled=false;const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){if(m){m.transparent=true;m.opacity=1;m.roughness=.72;}}}});
+
+  // Normalize from the visible mesh itself. The source armature carries unusual node scaling,
+  // so using a single axis or the skeleton bounds can make the camera back up miles away.
+  this.rig.updateMatrixWorld(true);
+  const rawBox=this.meshBox(this.rig);const rawSize=rawBox.getSize(new THREE.Vector3());
+  const rawMax=Math.max(rawSize.x,rawSize.y,rawSize.z)||1;
+  const anatBox=this.bounds||new THREE.Box3().setFromObject(this.root);const anatSize=anatBox.getSize(new THREE.Vector3());
+  const target=Math.max(anatSize.x,anatSize.y,anatSize.z)||4.2;
+  this.rig.scale.setScalar(target/rawMax);
+  this.rig.updateMatrixWorld(true);
+  const scaledBox=this.meshBox(this.rig);const center=scaledBox.getCenter(new THREE.Vector3());
+  this.rig.position.sub(center);
+  this.rig.updateMatrixWorld(true);
+  this.rigDisplayBox=this.meshBox(this.rig);
   return this.rig;
+ }
+ fitRig(){
+  if(!this.rig)return;const box=this.rigDisplayBox?.clone()||this.meshBox(this.rig);if(box.isEmpty())return;
+  const size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());const h=Math.max(size.x,size.y,size.z)||4;
+  this.controls.target.copy(center);this.camera.position.set(center.x,center.y,center.z+h*1.7);this.camera.near=.01;this.camera.far=Math.max(100,h*20);this.camera.updateProjectionMatrix();this.controls.update();
  }
  bone(...names){for(const n of names){const target=norm(n);for(const [k,b] of Object.entries(this.rigBones)){if(k===target||k.endsWith(' '+target)||k.includes(target))return b;}}return null;}
  resetRigPose(){if(!this.rig)return;this.rig.traverse(o=>{if(o.isBone&&this.rigBase[o.uuid]){o.quaternion.copy(this.rigBase[o.uuid].q);o.position.copy(this.rigBase[o.uuid].p);}});this.rig.rotation.set(0,0,0);}
@@ -92,7 +113,7 @@ class Viewer{
   if(p.lookUp)this.rotateBone(head,[-25,0,0]);
   if(p.lookDown)this.rotateBone(head,[25,0,0]);
   if(p.headstand){this.rig.rotation.z=Math.PI;}
-  this.rig.updateMatrixWorld(true);this.poseMode=true;this.root.visible=false;this.rigRoot.visible=true;this.fitToObject(this.rigRoot,1.28);return true;
+  this.rig.updateMatrixWorld(true);this.poseMode=true;this.root.visible=false;this.rigRoot.visible=true;this.fitRig();return true;
  }
  showAnatomy(){this.poseMode=false;this.rigRoot.visible=false;this.root.visible=true;}
  updateBounds(){this.root.updateMatrixWorld(true);this.bounds=new THREE.Box3().setFromObject(this.root);}

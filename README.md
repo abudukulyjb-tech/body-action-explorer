@@ -1,3 +1,7 @@
+# Body Action Explorer — v4.1
+
+Rig camera/scale hotfix: the rigged body is normalized from its visible mesh bounds instead of the source armature bounds, preventing the body from appearing as a tiny speck.
+
 # Body Action Explorer — v4 rigged pose preview
 
 Adds a real skinned/rigged CC0 human model for pose movement while keeping the existing anatomy layers.
