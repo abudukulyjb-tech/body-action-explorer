@@ -1,12 +1,9 @@
-# Body Action Explorer — v3
+# Body Action Explorer — v4 rigged pose preview
 
-This build removes the old fake mesh-stretch motion and adds the next whole-body foundation:
+Adds a real skinned/rigged CC0 human model for pose movement while keeping the existing anatomy layers.
 
-- muscles + skeleton + internal organs loaded together
-- lazy-load circulation, nerves, joints/ligaments, and lymph
-- Normal / Transparent / Cutaway / Isolate view modes
-- direct structure lookup for heart, lungs, intestines, colon, stomach, liver, kidneys, bladder, brain, pancreas, spleen, esophagus, rectum
-- optional heartbeat pulse when the query says "heart beating" or "pulse"
-- existing muscle-action highlighting retained without the tearing motion hack
+New pose examples include standing on one leg, squatting, arms up/out/forward, elbow bending, head turns, forward bends, and headstands. Pose phrases can be combined.
 
-Anatomy data is from DrMuratAltun/anatomi-simulatoru and its BodyParts3D/Z-Anatomy-derived assets. Preserve the existing attribution/license notices in the repository.
+Important: the rigged outer body now moves as one skinned model. The detailed BodyParts3D anatomy meshes are still a separate static reference. Rigging those ~2,900 anatomy structures to the same skeleton is the remaining anatomy-animation step.
+
+Rig source: UMRAM-Bilkent/supine-human-model `assets/human.glb`, derived from a Quaternius CC0 character.
