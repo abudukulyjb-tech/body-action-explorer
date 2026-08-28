@@ -1,1 +1,86 @@
 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0c0d" />
+  <title>Body Action Explorer</title>
+  <link rel="stylesheet" href="styles.css?v=4" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">WHOLE-BODY ANATOMY EXPLORER</div>
+        <h1>What's my body doing?</h1>
+      </div>
+      <button id="resetView" class="icon-btn" title="Reset view">↺</button>
+    </header>
+
+    <section class="search-panel">
+      <label for="actionInput">Describe an action, position, or body part</label>
+      <div class="search-row">
+        <input id="actionInput" autocomplete="off" autocapitalize="sentences" placeholder="e.g. show my heart / suck stomach in while sitting" />
+        <button id="goBtn">Show me</button>
+      </div>
+      <div id="quickExamples" class="chips">
+        <button data-q="heart">heart</button>
+        <button data-q="intestines">intestines</button>
+        <button data-q="open mouth">open mouth</button>
+        <button data-q="suck stomach in">suck stomach in</button>
+      </div>
+    </section>
+
+    <section class="viewer-card">
+      <div class="viewer-toolbar">
+        <span id="modelStatus">Loading anatomy…</span>
+        <button id="layersBtn" class="small-btn">Layers</button>
+      </div>
+
+      <div class="view-tabs" id="viewTabs">
+        <button data-view="normal" class="active">Normal</button>
+        <button data-view="transparent">Transparent</button>
+        <button data-view="cutaway">Cutaway</button>
+        <button data-view="isolate">Isolate</button>
+      </div>
+
+      <div id="layerPanel" class="layer-panel" hidden>
+        <label><input type="checkbox" data-system="muscle" checked> Muscles</label>
+        <label><input type="checkbox" data-system="bone" checked> Bones</label>
+        <label><input type="checkbox" data-system="organ" checked> Organs</label>
+        <label><input type="checkbox" data-system="circulation"> Circulation</label>
+        <label><input type="checkbox" data-system="nerve"> Nerves</label>
+        <label><input type="checkbox" data-system="joint"> Joints / ligaments</label>
+        <label><input type="checkbox" data-system="lymph"> Lymph</label>
+      </div>
+
+      <div id="viewer"></div>
+      <div class="legend">
+        <span><i class="dot contracting"></i>Contracting</span>
+        <span><i class="dot assisting"></i>Assisting</span>
+        <span><i class="dot relaxing"></i>Relaxing / lengthening</span>
+        <span><i class="dot selected"></i>Selected anatomy</span>
+      </div>
+    </section>
+
+    <section id="resultPanel" class="result-panel">
+      <div class="empty-state">Type an action or structure. Organs now load with the muscles and bones, and you can switch between normal, transparent, cutaway, and isolate views.</div>
+    </section>
+
+    <footer>
+      Educational anatomy reference. Position, pressure, organ displacement, and soft-tissue deformation will be approximations unless backed by validated biomechanical data.
+    </footer>
+  </main>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="app.js?v=4"></script>
+</body>
+</html>
