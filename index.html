@@ -11,48 +11,64 @@
   <main class="app-shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow">PERSONAL ANATOMY REFERENCE</div>
+        <div class="eyebrow">WHOLE-BODY ANATOMY EXPLORER</div>
         <h1>What's my body doing?</h1>
       </div>
       <button id="resetView" class="icon-btn" title="Reset view">↺</button>
     </header>
 
     <section class="search-panel">
-      <label for="actionInput">Describe what you're doing</label>
+      <label for="actionInput">Describe an action, position, or body part</label>
       <div class="search-row">
-        <input id="actionInput" autocomplete="off" autocapitalize="sentences" placeholder="e.g. suck tummy in and turn my head left" />
+        <input id="actionInput" autocomplete="off" autocapitalize="sentences" placeholder="e.g. show my heart / suck stomach in while sitting" />
         <button id="goBtn">Show me</button>
       </div>
       <div id="quickExamples" class="chips">
+        <button data-q="heart">heart</button>
+        <button data-q="intestines">intestines</button>
         <button data-q="open mouth">open mouth</button>
-        <button data-q="flex right arm">flex right arm</button>
-        <button data-q="suck tummy in">suck tummy in</button>
-        <button data-q="turn head left">turn head left</button>
+        <button data-q="suck stomach in">suck stomach in</button>
       </div>
-      <div id="clarifier" class="clarifier" hidden></div>
     </section>
 
     <section class="viewer-card">
       <div class="viewer-toolbar">
-        <span id="modelStatus">Loading real 3D muscle model…</span>
-        <button id="fadeToggle" class="small-btn">Fade others: on</button>
+        <span id="modelStatus">Loading anatomy…</span>
+        <button id="layersBtn" class="small-btn">Layers</button>
       </div>
+
+      <div class="view-tabs" id="viewTabs">
+        <button data-view="normal" class="active">Normal</button>
+        <button data-view="transparent">Transparent</button>
+        <button data-view="cutaway">Cutaway</button>
+        <button data-view="isolate">Isolate</button>
+      </div>
+
+      <div id="layerPanel" class="layer-panel" hidden>
+        <label><input type="checkbox" data-system="muscle" checked> Muscles</label>
+        <label><input type="checkbox" data-system="bone" checked> Bones</label>
+        <label><input type="checkbox" data-system="organ" checked> Organs</label>
+        <label><input type="checkbox" data-system="circulation"> Circulation</label>
+        <label><input type="checkbox" data-system="nerve"> Nerves</label>
+        <label><input type="checkbox" data-system="joint"> Joints / ligaments</label>
+        <label><input type="checkbox" data-system="lymph"> Lymph</label>
+      </div>
+
       <div id="viewer"></div>
       <div class="legend">
         <span><i class="dot contracting"></i>Contracting</span>
         <span><i class="dot assisting"></i>Assisting</span>
         <span><i class="dot relaxing"></i>Relaxing / lengthening</span>
+        <span><i class="dot selected"></i>Selected anatomy</span>
       </div>
     </section>
 
     <section id="resultPanel" class="result-panel">
-      <div class="empty-state">
-        Type what you're doing. The app translates ordinary language into anatomical actions, then highlights the involved structures on the real 3D model.
-      </div>
+      <div class="empty-state">Type an action or structure. Organs now load with the muscles and bones, and you can switch between normal, transparent, cutaway, and isolate views.</div>
     </section>
 
     <footer>
-      Educational anatomy reference. Muscle actions are simplified and can vary with posture, load, breathing and individual anatomy.
+      Educational anatomy reference. Position, pressure, organ displacement, and soft-tissue deformation will be approximations unless backed by validated biomechanical data.
     </footer>
   </main>
 
